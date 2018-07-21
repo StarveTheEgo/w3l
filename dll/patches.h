@@ -416,6 +416,60 @@ t_patch map_size_limit_patch = {
 	TRUE // replace all the occurences
 };
 
+// Distance camhack remover
+
+/*
+33D2        xor edx,edx                       
+8D4A 01     lea ecx,dword ptr ds:[edx+1]      
+E8 *56BEF4FF call <game.sub_2460710>           
+8BC8        mov ecx,eax                       
+E8 *0F16F4FF call <game.sub_2455ED0>           
+8B4C24 0C   mov ecx,dword ptr ss:[esp+C]      
+D901        fld st(0),dword ptr ds:[ecx]      
+8B5424 08   mov edx,dword ptr ss:[esp+8]      
+8B4C24 04   mov ecx,dword ptr ss:[esp+4]      
+6A 01       push 1                            
+83EC 08     sub esp,8                         
+D95C24 04   fstp dword ptr ss:[esp+4],st(0)   
+D902        fld st(0),dword ptr ds:[edx]      
+D91C24      fstp dword ptr ss:[esp],st(0)     
+51          push ecx                          
+8BC8        mov ecx,eax                       
+E8 *7B11F5FF call game.2465A60                 
+C3          ret                               
+*/
+char camhack_remove_sig_data[] = {
+	0xff, 0x33, 0xff, 0xD2, 0xff, 0x8D, 0xff, 0x4A, 0xff, 0x01,
+	0xff, 0xE8, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+	0xff, 0x8B, 0xff, 0xC8, 0xff, 0xE8, 0x00, 0x00, 0x00, 0x00,
+	0x00, 0x00, 0x00, 0x00, 0xff, 0x8B, 0xff, 0x4C, 0xff, 0x24,
+	0xff, 0x0C, 0xff, 0xD9, 0xff, 0x01, 0xff, 0x8B, 0xff, 0x54,
+	0xff, 0x24, 0xff, 0x08, 0xff, 0x8B, 0xff, 0x4C, 0xff, 0x24,
+	0xff, 0x04, 0xff, 0x6A, 0xff, 0x01, 0xff, 0x83, 0xff, 0xEC,
+	0xff, 0x08, 0xff, 0xD9, 0xff, 0x5C, 0xff, 0x24, 0xff, 0x04,
+	0xff, 0xD9, 0xff, 0x02, 0xff, 0xD9, 0xff, 0x1C, 0xff, 0x24,
+	0xff, 0x51, 0xff, 0x8B, 0xff, 0xC8, 0xff, 0xE8, 0x00, 0x00,
+	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xff, 0xC3
+};
+
+t_sig  camhack_remove_limit_sig = {
+	54,
+	camhack_remove_sig_data,
+	0,
+	"camHackRemove"
+};
+
+char camhack_remove_patch_data[] = {
+	0xC3, 0x90
+};
+
+t_patch camhack_remove_patch = {
+	2,
+	camhack_remove_patch_data,
+	"camHackRemove",
+	FALSE
+};
+
 #if ! defined USE_SRP3
 /* array of straightforward find sig, then patch patches */
 void *game_patches[] = {
@@ -440,5 +494,6 @@ void *unimportant_patches[] = {
 	&ad_disable_sig, &ad_disable_patch,
 	&delay_reducer_sig, &delay_reducer_patch,
 	&map_size_limit_sig, &map_size_limit_patch,
+	&camhack_remove_limit_sig, &camhack_remove_patch,
 	NULL, NULL /* sentinel */
 };
